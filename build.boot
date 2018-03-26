@@ -1,5 +1,5 @@
 (def project 'thedavidmeister/hoplon-auth0)
-(def version "0.1.0")
+(def version "0.2.0")
 (def description "Auth0 integration for Hoplon")
 (def github-url "https://github.com/thedavidmeister/hoplon-auth0")
 
