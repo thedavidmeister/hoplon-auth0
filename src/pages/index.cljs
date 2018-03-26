@@ -20,7 +20,10 @@
      "Login with google")
     (h/button
      :login! {:connection "facebook"}
-     "Login with facebook"))
+     "Login with facebook")
+    (h/button
+     :logout! #(prn "logout callback!")
+     "Logout"))
 
    "Access token:"
    (h/pre (j/cell= (pr-str hoplon-auth0.state/access-token)))

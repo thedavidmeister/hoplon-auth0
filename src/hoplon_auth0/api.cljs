@@ -87,8 +87,19 @@
    (fn [e r]
     (when e
      (taoensso.timbre/warn "Error parsing Auth0 access hash in URL.")
-     (hoplon-auth0.state/flush-state!))
+     (hoplon-auth0.state/flush-state!)
+     (cb e r))
 
     (when r
      (taoensso.timbre/debug "Auth0 access hash in URL. Logging in with discovered credentials.")
-     (apply login! (parsed-hash->token-data r)))))))
+     (apply login! (into (parsed-hash->token-data r) [cb])))))))
+
+(defn logout!
+ "Logs the user out by cleaning up local state and notifying auth0."
+ ([] (logout! #()))
+ ([cb]
+  (h/with-animation-frame
+   (hoplon-auth0.state/flush-state!)
+   (when (fn? cb) (cb))
+   (.logout (web-auth)
+    (clj->js {:returnTo (-> js/window .-location .-origin)})))))
