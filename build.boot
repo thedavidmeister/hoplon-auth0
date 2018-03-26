@@ -1,11 +1,9 @@
 (def project 'thedavidmeister/hoplon-auth0)
 (def version "0.1.0")
 (def description "Auth0 integration for Hoplon")
-(def github-url "https://github.com/thedavidmeister/cljc-ably")
+(def github-url "https://github.com/thedavidmeister/hoplon-auth0")
 
 (set-env!
- :repositories [["jcenter" "https://jcenter.bintray.com/"]
-                ["clojars.org" "http://clojars.org/repo"]]
  :source-paths #{"src"}
  :dependencies
  '[; scaffolding...
@@ -43,6 +41,7 @@
 
 (def compiler-options
  {:closure-defines
+  ; don't use these, it's just here for testing, get your own!
   {'hoplon-auth0.data/client-id "vtaVcOFhW77JqwXQlzMyY8GtKQBcMmIb"
    'hoplon-auth0.data/domain "hoplon-auth0.au.auth0.com"}})
 
