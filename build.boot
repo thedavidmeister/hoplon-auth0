@@ -18,6 +18,7 @@
    [crisptrutski/boot-cljs-test "0.3.5-SNAPSHOT"]
    [adzerk/bootlaces "0.1.13"]
    [com.taoensso/timbre "4.10.0"]
+   [environ "1.1.0"]
 
    ; everything else...
    [cljsjs/auth0 "9.3.4-0"]])
@@ -35,15 +36,14 @@
  '[tailrecursion.boot-jetty :refer [serve]]
  '[thedavidmeister.boot-github-pages :refer [github-pages]]
  '[crisptrutski.boot-cljs-test :refer [test-cljs]]
- '[adzerk.bootlaces :refer :all])
+ '[adzerk.bootlaces :refer :all]
+ 'hoplon-auth0.compile)
 
 (bootlaces! version)
 
 (def compiler-options
- {:closure-defines
-  ; don't use these, it's just here for testing, get your own!
-  {'hoplon-auth0.data/client-id "vtaVcOFhW77JqwXQlzMyY8GtKQBcMmIb"
-   'hoplon-auth0.data/domain "hoplon-auth0.au.auth0.com"}})
+ (-> {}
+  hoplon-auth0.compile/with-closure-defines))
 
 (deftask front-dev
  "Build for local development."
