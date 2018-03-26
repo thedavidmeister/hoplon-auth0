@@ -117,3 +117,22 @@
    (when (fn? cb) (cb))
    (.logout (web-auth)
     (clj->js {:returnTo (-> js/window .-location .-origin)})))))
+
+(defn validate-jwt
+ [t n cb]
+ (let [web-auth (web-auth)]
+  (.validateToken web-auth
+   t n cb)))
+
+; enforcers
+
+; Immediately drop the JWT and logout if it is not valid.
+; This really only works on page load or if the token gets modified somehow.
+; Assuming nothing malicious is going on, this will happen when the JWT
+; exists in local storage, then naturally expires and then the user visits us.
+(j/cell=
+ (when hoplon-auth0.state/token
+  (validate-jwt
+   hoplon-auth0.state/token
+   hoplon-auth0.state/nonce
+   (fn [e r] (when e (logout!))))))
