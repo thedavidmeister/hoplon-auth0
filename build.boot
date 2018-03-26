@@ -40,7 +40,10 @@
 
 (bootlaces! version)
 
-(def compiler-options {})
+(def compiler-options
+ {:closure-defines
+  {'hoplon-auth0.data/client-id "vtaVcOFhW77JqwXQlzMyY8GtKQBcMmIb"
+   'hoplon-auth0.data/domain "hoplon-auth0.au.auth0.com"}})
 
 (deftask front-dev
  "Build for local development."
