@@ -7,6 +7,20 @@
   [javelin.core :as j]
   [hoplon.core :as h]))
 
+(let [pre-auth-hash (hoplon.storage-atom/session-storage
+                     (j/cell nil)
+                     ::pre-auth-hash)]
+ (defn sync-pre-auth-hash!
+  []
+  (reset! pre-auth-hash (-> js/window .-location .-hash)))
+
+ (defn redeem-pre-auth-hash!
+  []
+  (when @pre-auth-hash
+   (j/dosync
+    (set! (-> js/window .-location .-hash) @pre-auth-hash)
+    (reset! pre-auth-hash nil)))))
+
 (defn web-auth
  []
  (auth0.WebAuth.
@@ -16,7 +30,7 @@
  ([] (authorize nil))
  ([params]
   ; log the hash in case it needs to be restored after a successful auth
-  ; (sync-pre-auth-hash!)
+  (sync-pre-auth-hash!)
   (.authorize (web-auth)
    (clj->js
     (merge
@@ -74,9 +88,9 @@
 
     ; juggle the route a bit to get the user to the right place after logging in
     (h/with-animation-frame
-     (cb e p))))))
+     (cb e p)
      ; redeem the pre-auth-hash if it exists
-     ; (auth.auth0.api/redeem-pre-auth-hash!)))))))
+     (redeem-pre-auth-hash!))))))
 
 (defn login-from-url
  ([] (login-from-url #()))
