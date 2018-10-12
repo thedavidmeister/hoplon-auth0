@@ -5,7 +5,9 @@
   hoplon-auth0.state
   taoensso.timbre
   [javelin.core :as j]
-  [hoplon.core :as h]))
+  [hoplon.core :as h])
+ (:require-macros
+  [hoplon-auth0.with-animation-frame :refer [with-animation-frame]]))
 
 (let [pre-auth-hash (hoplon.storage-atom/session-storage
                      (j/cell nil)
@@ -87,7 +89,7 @@
       (hoplon-auth0.state/flush-state!)))
 
     ; juggle the route a bit to get the user to the right place after logging in
-    (h/with-animation-frame
+    (hoplon-auth0.with-animation-frame/with-animation-frame
      (cb e p)
      ; redeem the pre-auth-hash if it exists
      (redeem-pre-auth-hash!))))))
@@ -112,7 +114,7 @@
  "Logs the user out by cleaning up local state and notifying auth0."
  ([] (logout! #()))
  ([cb]
-  (h/with-animation-frame
+  (hoplon-auth0.with-animation-frame/with-animation-frame
    (hoplon-auth0.state/flush-state!)
    (when (fn? cb) (cb))
    (.logout (web-auth)
