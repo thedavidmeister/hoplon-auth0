@@ -1,7 +1,7 @@
 (ns hoplon-auth0.api
  (:require
   hoplon-auth0.data
-  cljsjs.auth0
+  ["auth0-js" :as auth0-js]
   hoplon-auth0.state
   taoensso.timbre
   [javelin.core :as j]
@@ -25,7 +25,7 @@
 
 (defn web-auth
  []
- (auth0.WebAuth.
+ (auth0-js/WebAuth.
   hoplon-auth0.data/web-auth))
 
 (defn authorize

@@ -7,6 +7,10 @@
   {:target :browser
    :output-dir "public/js/index"
    :asset-path "/public/js/index"
+   :closure-defines
+   {
+    hoplon-auth0.data/client-id "vtaVcOFhW77JqwXQlzMyY8GtKQBcMmIb"
+    hoplon-auth0.data/domain "hoplon-auth0.au.auth0.com"}
    :modules
    {:main
-    {:entries [pages.index]}}}}}
+    {:entries [index.mount]}}}}}

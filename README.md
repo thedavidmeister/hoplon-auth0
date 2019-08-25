@@ -6,7 +6,9 @@ Auth0 integration for Hoplon.
 
 [![Clojars Project](https://img.shields.io/clojars/v/thedavidmeister/hoplon-auth0.svg)](https://clojars.org/thedavidmeister/hoplon-auth0)
 
-Uses `v9.3.4` of the Auth0 lib from CLJSJS.
+Uses `v9.11.3` of `auth0-js` from npm.
+
+Provides a `default.nix` file for nix shell based development.
 
 ## Auth0 config
 
@@ -19,11 +21,6 @@ redirect.
 
 Both `hoplon-auth0.data/client-id` and `hoplon-auth0.data/domain` need to be set
 with `:closure-defines` in the compiler options for CLJS.
-
-A convenience fn `hoplon-auth0.compile/with-closure-defines` is provided and
-either accepts `domain` and `client-id` directly or from `:auth0-domain` and
-`:auth0-client-id` environment variables as per `environ` (i.e. `AUTH0_DOMAIN`
-and `AUTH0_CLIENT_ID`. There is an example of this in `build.boot`.
 
 ## Usage
 
