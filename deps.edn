@@ -1,0 +1,19 @@
+{
+ :deps
+ {
+  org.clojure/clojurescript
+  {:mvn/version "1.10.520"}
+
+  thheller/shadow-cljs
+  {:mvn/version "2.8.51"}
+
+  hoplon/hoplon
+  {:git/url "https://github.com/hoplon/hoplon.git"
+   :sha "d502e3dd0370b1d86dafca6153a3aa94a3056fb5"}
+
+  com.taoensso/timbre
+  {:mvn/version "4.10.0"}
+
+  thedavidmeister/hoplon-elem-lib
+  {:git/url "https://github.com/thedavidmeister/hoplon-elem-lib"
+   :sha "a9de2b89d1cedc8a2acaffd3c1aa1a1549a50bf9"}}}

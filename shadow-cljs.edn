@@ -1,0 +1,12 @@
+;; shadow-cljs configuration
+{
+ :deps true
+ :builds
+ {
+  :index
+  {:target :browser
+   :output-dir "public/js/index"
+   :asset-path "/public/js/index"
+   :modules
+   {:main
+    {:entries [pages.index]}}}}}
