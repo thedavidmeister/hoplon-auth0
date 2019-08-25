@@ -10,6 +10,12 @@ Uses `v9.11.3` of `auth0-js` from npm.
 
 Provides a `default.nix` file for nix shell based development.
 
+```bash
+nix-shell
+shadow-cljs compile index
+serve
+```
+
 ## Auth0 config
 
 SPA style login works by redirecting the user to a login provider, then back to
