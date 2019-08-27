@@ -50,6 +50,8 @@
         (sequential? v) v
         ; v is a callback so wrap it with default state
         (fn? v) [(hoplon-auth0.state/login-data) v]
+        ; v is a state so wrap it with empty callback
+        (cell? v) [v #()]
         ; v is something truthy logout with default state
         v [(hoplon-auth0.state/login-data) #()]
         ; do nothing
