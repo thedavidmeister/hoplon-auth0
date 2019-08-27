@@ -28,6 +28,10 @@
  (auth0-js/WebAuth.
   hoplon-auth0.data/web-auth))
 
+(defn management
+ [params]
+ (auth0-js/Management. (clj->js params)))
+
 (defn authorize
  ([] (authorize nil))
  ([params] (authorize (hoplon-auth0.state/login-data) params))
