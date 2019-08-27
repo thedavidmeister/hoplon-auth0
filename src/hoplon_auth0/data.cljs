@@ -9,8 +9,9 @@
    :clientID client-id}))
 
 (def authorize
- {:redirectUri (-> js/window .-location .-origin)
+ {:redirectUri (-> js/window .-location .-href)
   ; Need a scope AND "id_token" responseType to get a JWT.
   :responseType "token id_token"
-  :scope "openid email"
+  :scope "openid email profile"
+  :responseMode "fragment"
   :clientID client-id})
