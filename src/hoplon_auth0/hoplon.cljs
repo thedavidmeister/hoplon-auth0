@@ -1,6 +1,7 @@
 (ns hoplon-auth0.hoplon
  (:require
   [hoplon.core :as h]
+  [javelin.core :as j]
   hoplon-auth0.api))
 
 ; START LOGIN
@@ -51,7 +52,7 @@
         ; v is a callback so wrap it with default state
         (fn? v) [(hoplon-auth0.state/login-data) v]
         ; v is a state so wrap it with empty callback
-        (cell? v) [v #()]
+        (j/cell? v) [v #()]
         ; v is something truthy logout with default state
         v [(hoplon-auth0.state/login-data) #()]
         ; do nothing
