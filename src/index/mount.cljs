@@ -7,42 +7,55 @@
   hoplon-auth0.api
   hoplon-auth0.state))
 
-(hoplon-auth0.api/login-from-url)
+; toggle this to see local vs. global state
+(def local? true)
 
 (defn to-element! [el]
  (el
-  (h/div
-   "Hi, click a button to login!"
+  (let [local-state (j/cell nil)
+        state (if local? local-state (hoplon-auth0.state/login-data))]
+
+   (h/with-dom el (hoplon-auth0.api/login-from-url state))
+
    (h/div
-    (h/button
-     :login! {:connection "google-oauth2"}
-     "Login with google")
-    (h/button
-     :login! {:connection "facebook"}
-     "Login with facebook")
-    (h/button
-     :logout! #(prn "logout callback!")
-     "Logout"))
+    "Hi, click a button to login!"
+    (h/div
+     (h/button
+      :login! [state {:connection "google-oauth2"}]
+      "Login with google")
+     (h/button
+      :login! [state {:connection "facebook"}]
+      "Login with facebook")
+     (h/button
+      :logout! [state #(prn "logout callback!")]
+      "Logout"))
 
-   "Access token:"
-   (let [access-token (hoplon-auth0.state/access-token)]
-    (h/pre (j/cell= (pr-str access-token))))
+    "Global state:"
+    (let [global-state (hoplon-auth0.state/login-data)]
+     (h/pre (j/cell= (pr-str global-state))))
 
-   "User profile:"
-   (let [user-profile (hoplon-auth0.state/user-profile)]
-    (h/pre (j/cell= (pr-str user-profile))))
+    "Local state:"
+    (h/pre (j/cell= (pr-str local-state)))
 
-   "State:"
-   (let [state (hoplon-auth0.state/state)]
-    (h/pre (j/cell= (pr-str state))))
+    "Access token:"
+    (let [access-token (hoplon-auth0.state/access-token state)]
+     (h/pre (j/cell= (pr-str access-token))))
 
-   "Nonce:"
-   (let [nonce (hoplon-auth0.state/nonce)]
-    (h/pre (j/cell= (pr-str nonce))))
+    "User profile:"
+    (let [user-profile (hoplon-auth0.state/user-profile state)]
+     (h/pre (j/cell= (pr-str user-profile))))
 
-   "JWT Token:"
-   (let [token (hoplon-auth0.state/token)]
-    (h/pre (j/cell= (pr-str token)))))))
+    "State:"
+    (let [state (hoplon-auth0.state/state state)]
+     (h/pre (j/cell= (pr-str state))))
+
+    "Nonce:"
+    (let [nonce (hoplon-auth0.state/nonce state)]
+     (h/pre (j/cell= (pr-str nonce))))
+
+    "JWT Token:"
+    (let [token (hoplon-auth0.state/token state)]
+     (h/pre (j/cell= (pr-str token))))))))
 
 (let [mountpoint (atom (h/div))]
  (defn remount! []

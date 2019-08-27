@@ -30,7 +30,8 @@
 
 (defn authorize
  ([] (authorize nil))
- ([params]
+ ([params] (authorize (hoplon-auth0.state/login-data) params))
+ ([state params]
   ; log the hash in case it needs to be restored after a successful auth
   (sync-pre-auth-hash!)
   (.authorize (web-auth)
@@ -65,33 +66,28 @@
 
 (defn login!
   "Updates state in response to a login event. Requires a profile and a token."
- ([a t s n] (login! a t s n #()))
+ ([state a t s n] (login! state a t s n #()))
  ; Access token, jwt token, jwt state, jwt nonce, callback.
- ([a t s n cb]
+ ([state a t s n cb]
   ; We have to actually fetch the user info from auth0 using the access token.
   (user-info
    a
    (fn [e p]
     (if-not e
      ; No errors, let's drop all our auth data into place.
-     (do
-      (let [access-token (hoplon-auth0.state/access-token)
-            token (hoplon-auth0.state/token)
-            state (hoplon-auth0.state/state)
-            nonce (hoplon-auth0.state/nonce)
-            user-profile (hoplon-auth0.state/user-profile)]
-       (j/dosync
-        (reset! access-token a)
-        (reset! token t)
-        (reset! state s)
-        (reset! nonce n)
-        (reset! user-profile p))))
+     (reset!
+      state
+      {:access-token a
+       :token t
+       :state s
+       :nonce n
+       :user-profile (js->clj p)})
 
      (do
       ; Let the user (and us) know that something bad happened.
       (taoensso.timbre/warn (str "Error fetching user profile information."))
       ; Drop any user credentials we might have crufting up the place.
-      (hoplon-auth0.state/flush-state!)))
+      (hoplon-auth0.state/flush-state! state)))
 
     ; juggle the route a bit to get the user to the right place after logging in
     (hoplon-auth0.with-animation-frame/with-animation-frame
@@ -101,29 +97,36 @@
 
 (defn login-from-url
  ([] (login-from-url #()))
- ([cb]
+ ([cb-or-state]
+  (if (fn? cb-or-state)
+   (login-from-url (hoplon-auth0.state/login-data) cb-or-state)
+   (login-from-url cb-or-state #())))
+ ([state cb]
   ; If we can cleanly parse all our tokens from the URL, go ahead and log in.
   ; If not, do nothing at all.
   (parse-hash
    (fn [e r]
     (when e
      (taoensso.timbre/warn "Error parsing Auth0 access hash in URL.")
-     (hoplon-auth0.state/flush-state!)
+     (hoplon-auth0.state/flush-state! state)
      (cb e r))
 
     (when r
      (taoensso.timbre/debug "Auth0 access hash in URL. Logging in with discovered credentials.")
-     (apply login! (into (parsed-hash->token-data r) [cb])))))))
+     (apply
+      (partial login! state)
+      (into (parsed-hash->token-data r) [cb])))))))
 
 (defn logout!
  "Logs the user out by cleaning up local state and notifying auth0."
  ([] (logout! #()))
- ([cb]
+ ([cb] (logout! (hoplon-auth0.state/login-data) cb))
+ ([state cb]
   (hoplon-auth0.with-animation-frame/with-animation-frame
-   (hoplon-auth0.state/flush-state!)
+   (hoplon-auth0.state/flush-state! state)
    (when (fn? cb) (cb))
    (.logout (web-auth)
-    (clj->js {:returnTo (-> js/window .-location .-href)})))))
+    (clj->js {:returnTo (hoplon-auth0.data/redirect-uri)})))))
 
 (defn validate-jwt
  [t n cb]

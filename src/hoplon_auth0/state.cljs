@@ -12,25 +12,22 @@
   ::login-data))
 (def login-data (memoize -login-data))
 
-(defn build-lens
- ([k] (build-lens k (login-data)))
+(defn build-cell
+ ([k] (build-cell k (login-data)))
  ([k state]
-  (j/cell=
-   (get state k)
-   (partial swap! state assoc k))))
+  (j/cell= (get state k))))
 
-(def access-token (partial build-lens :access-token))
-(def state (partial build-lens :state))
-(def nonce (partial build-lens :nonce))
-(def token (partial build-lens :token))
+(def access-token (partial build-cell :access-token))
+(def state (partial build-cell :state))
+(def nonce (partial build-cell :nonce))
+(def token (partial build-cell :token))
 
 (defn -user-profile
  ([] (-user-profile (login-data)))
  ([state]
-  (let [p (build-lens :user-profile state)]
+  (let [p (build-cell :user-profile state)]
    (j/cell=
-    (when p (clojure.walk/keywordize-keys p))
-    #(reset! p (js->clj %))))))
+    (when p (clojure.walk/keywordize-keys p))))))
 (def user-profile (memoize -user-profile))
 
 (defn -logged-in?

@@ -8,8 +8,15 @@
   {:domain domain
    :clientID client-id}))
 
+(defn redirect-uri
+ "build the default redirect uri (current url sans hash)"
+ []
+ (str
+  (-> js/window .-location .-origin)
+  (-> js/window .-location .-pathname)))
+
 (def authorize
- {:redirectUri (-> js/window .-location .-href)
+ {:redirectUri (redirect-uri)
   ; Need a scope AND "id_token" responseType to get a JWT.
   :responseType "token id_token"
   :scope "openid email profile"
