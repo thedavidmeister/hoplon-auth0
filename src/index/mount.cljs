@@ -25,19 +25,24 @@
      "Logout"))
 
    "Access token:"
-   (h/pre (j/cell= (pr-str hoplon-auth0.state/access-token)))
+   (let [access-token (hoplon-auth0.state/access-token)]
+    (h/pre (j/cell= (pr-str access-token))))
 
    "User profile:"
-   (h/pre (j/cell= (pr-str hoplon-auth0.state/user-profile)))
+   (let [user-profile (hoplon-auth0.state/user-profile)]
+    (h/pre (j/cell= (pr-str user-profile))))
 
    "State:"
-   (h/pre (j/cell= (pr-str hoplon-auth0.state/state)))
+   (let [state (hoplon-auth0.state/state)]
+    (h/pre (j/cell= (pr-str state))))
 
    "Nonce:"
-   (h/pre (j/cell= (pr-str hoplon-auth0.state/nonce)))
+   (let [nonce (hoplon-auth0.state/nonce)]
+    (h/pre (j/cell= (pr-str nonce))))
 
    "JWT Token:"
-   (h/pre (j/cell= (pr-str hoplon-auth0.state/token))))))
+   (let [token (hoplon-auth0.state/token)]
+    (h/pre (j/cell= (pr-str token)))))))
 
 (let [mountpoint (atom (h/div))]
  (defn remount! []

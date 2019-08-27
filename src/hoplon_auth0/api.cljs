@@ -75,12 +75,17 @@
     (if-not e
      ; No errors, let's drop all our auth data into place.
      (do
-      (j/dosync
-       (reset! hoplon-auth0.state/access-token a)
-       (reset! hoplon-auth0.state/token t)
-       (reset! hoplon-auth0.state/state s)
-       (reset! hoplon-auth0.state/nonce n)
-       (reset! hoplon-auth0.state/user-profile p)))
+      (let [access-token (hoplon-auth0.state/access-token)
+            token (hoplon-auth0.state/token)
+            state (hoplon-auth0.state/state)
+            nonce (hoplon-auth0.state/nonce)
+            user-profile (hoplon-auth0.state/user-profile)]
+       (j/dosync
+        (reset! access-token a)
+        (reset! token t)
+        (reset! state s)
+        (reset! nonce n)
+        (reset! user-profile p))))
 
      (do
       ; Let the user (and us) know that something bad happened.
@@ -118,7 +123,7 @@
    (hoplon-auth0.state/flush-state!)
    (when (fn? cb) (cb))
    (.logout (web-auth)
-    (clj->js {:returnTo (-> js/window .-location .-origin)})))))
+    (clj->js {:returnTo (-> js/window .-location .-href)})))))
 
 (defn validate-jwt
  [t n cb]
@@ -132,9 +137,11 @@
 ; This really only works on page load or if the token gets modified somehow.
 ; Assuming nothing malicious is going on, this will happen when the JWT
 ; exists in local storage, then naturally expires and then the user visits us.
-(j/cell=
- (when hoplon-auth0.state/token
-  (validate-jwt
-   hoplon-auth0.state/token
-   hoplon-auth0.state/nonce
-   (fn [e r] (when e (logout!))))))
+(let [token (hoplon-auth0.state/token)
+      nonce (hoplon-auth0.state/nonce)]
+ (j/cell=
+  (when token
+   (validate-jwt
+    token
+    nonce
+    (fn [e r] (when e (logout!)))))))
