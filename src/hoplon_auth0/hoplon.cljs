@@ -15,8 +15,13 @@
  [el v]
  (let [[state authorize-config]
        (cond
+        ; v is a [state authorize-config] tuple already
         (sequential? v) v
+        ; v is a authorize-config map so wrap with default state
         (coll? v) [(hoplon-auth0.state/login-data) v]
+        ; v is truthy so login with defaults
+        v [(hoplon-auth0.state/login-data) nil]
+        ; do nothing
         :else [nil nil])]
   (el
    :click (build-login-handler state authorize-config))))
@@ -32,14 +37,25 @@
 ; START LOGOUT
 
 (defn build-logout-handler
- [v]
+ [state cb]
  (fn [_]
-  (when v
-   (hoplon-auth0.api/logout! v))))
+  (when cb
+   (hoplon-auth0.api/logout! state cb))))
 
 (defn bind-logout!
  [el v]
- (el :click (build-logout-handler v)))
+ (let [[state cb]
+       (cond
+        ; v is a [state cb] tuple use as is
+        (sequential? v) v
+        ; v is a callback so wrap it with default state
+        (fn? v) [(hoplon-auth0.state/login-data) v]
+        ; v is something truthy logout with default state
+        v [(hoplon-auth0.state/login-data) #()]
+        ; do nothing
+        :else [nil nil])]
+  (el
+   :click (build-logout-handler state cb))))
 
 (defmethod hoplon.core/do! :logout!
  [el k v]
