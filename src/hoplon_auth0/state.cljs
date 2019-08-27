@@ -4,28 +4,43 @@
   clojure.walk
   [javelin.core :as j]))
 
-(defonce access-token (hoplon.storage-atom/local-storage (j/cell nil) ::access-token))
-(defonce user-profile
- (let [p (hoplon.storage-atom.local-storage (j/cell nil) ::user-profile)]
-  (j/cell=
-   (when p (clojure.walk/keywordize-keys p))
-   #(reset! p (js->clj %)))))
+; fallback state if none provided
+; stores logins in a global local storage cell
+(defn -login-data []
+ (hoplon.storage-atom/local-storage
+  (j/cell nil)
+  ::login-data))
+(def login-data (memoize -login-data))
 
-(defonce state (hoplon.storage-atom/local-storage (j/cell nil) ::state))
-(defonce nonce (hoplon.storage-atom/local-storage (j/cell nil) ::nonce))
-(defonce token (hoplon.storage-atom/local-storage (j/cell nil) ::token))
+(defn build-cell
+ ([k] (build-cell k (login-data)))
+ ([k state]
+  (j/cell= (get state k))))
 
-(defonce logged-in?
- (j/cell=
-  (and
-   (boolean user-profile)
-   (boolean token))))
+(def access-token (partial build-cell :access-token))
+(def state (partial build-cell :state))
+(def nonce (partial build-cell :nonce))
+(def token (partial build-cell :token))
+
+(defn -user-profile
+ ([] (-user-profile (login-data)))
+ ([state]
+  (let [p (build-cell :user-profile state)]
+   (j/cell=
+    (when p (clojure.walk/keywordize-keys p))))))
+(def user-profile (memoize -user-profile))
+
+(defn -logged-in?
+ ([] (-logged-in? (login-data)))
+ ([state]
+  (let [profile (user-profile state)
+        token (token state)]
+   (j/cell=
+    (and
+     (boolean user-profile)
+     (boolean token))))))
+(def logged-in? (memoize -logged-in?))
 
 (defn flush-state!
- []
- (j/dosync
-  (reset! access-token nil)
-  (reset! user-profile nil)
-  (reset! token nil)
-  (reset! state nil)
-  (reset! nonce nil)))
+ ([] (flush-state! (login-data)))
+ ([state] (reset! state nil)))
