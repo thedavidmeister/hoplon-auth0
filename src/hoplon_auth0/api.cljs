@@ -110,6 +110,10 @@
   ; If not, do nothing at all.
   (parse-hash
    (fn [e r]
+    (when (not (or e r))
+     (taoensso.timbre/info "No Auth0 hash in URL.")
+     (cb e r))
+
     (when e
      (taoensso.timbre/warn "Error parsing Auth0 access hash in URL.")
      (hoplon-auth0.state/flush-state! state)
