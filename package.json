@@ -4,7 +4,7 @@
   "description": "hoplon auth0 integration",
   "main": "index.js",
   "dependencies": {
-    "auth0-js": "^9.11.3",
+    "auth0-js": "^9.13.2",
     "highlight.js": "^9.15.10",
     "jquery": "^3.4.1",
     "local-web-server": "^3.0.7",
