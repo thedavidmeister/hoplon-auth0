@@ -6,7 +6,7 @@
   "dependencies": {
     "auth0-js": "^9.11.3",
     "highlight.js": "^9.15.10",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "local-web-server": "^3.0.7",
     "shadow-cljs": "^2.8.51"
   },
